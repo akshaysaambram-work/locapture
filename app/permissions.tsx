@@ -1,7 +1,7 @@
 import * as Camera from "expo-camera";
 import * as Location from "expo-location";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -12,9 +12,29 @@ import {
 
 export default function PermissionsScreen() {
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [, requestCameraPermission] = Camera.useCameraPermissions();
 
-  const requestPermissions = async () => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const camera = await requestCameraPermission();
+
+        const location = await Location.getForegroundPermissionsAsync();
+
+        const allGranted =
+          camera.status === "granted" && location.status === "granted";
+
+        if (allGranted) router.replace("/camera");
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setChecking(false);
+      }
+    })();
+  }, []);
+
+  async function requestPermissions() {
     try {
       setLoading(true);
 
@@ -38,7 +58,15 @@ export default function PermissionsScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  if (checking) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-black px-6 justify-center">

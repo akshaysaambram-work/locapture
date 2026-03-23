@@ -20,7 +20,7 @@ export default function Index() {
           Locapture
         </Text>
         <Text className="text-zinc-400 text-sm mt-2">
-          Capture moments with location
+          Capture moments with location 📍
         </Text>
       </View>
       <View className="absolute bottom-10">
