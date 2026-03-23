@@ -1,9 +1,9 @@
-import { View, Text, Pressable, StatusBar } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
-import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Location from "expo-location";
+import { router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, StatusBar, Text, View } from "react-native";
 
 export default function CameraScreen() {
   const cameraRef = useRef<CameraView>(null);
@@ -34,8 +34,10 @@ export default function CameraScreen() {
       quality: 1,
     });
 
-    // Save to gallery
-    await MediaLibrary.saveToLibraryAsync(photo.uri);
+    router.push({
+      pathname: "/edit",
+      params: { uri: photo.uri },
+    });
   };
 
   const toggleCamera = () => {
