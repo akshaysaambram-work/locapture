@@ -15,9 +15,7 @@ export default function CameraScreen() {
 
   useEffect(() => {
     (async () => {
-      if (!hasPermission?.granted) {
-        await requestPermission();
-      }
+      if (!hasPermission?.granted) await requestPermission();
 
       const locPerm = await Location.getForegroundPermissionsAsync();
       if (locPerm.status === "granted") {
@@ -27,7 +25,7 @@ export default function CameraScreen() {
     })();
   }, []);
 
-  const takePhoto = async () => {
+  async function takePhoto() {
     if (!cameraRef.current) return;
 
     const photo = await cameraRef.current.takePictureAsync({
@@ -38,11 +36,11 @@ export default function CameraScreen() {
       pathname: "/edit",
       params: { uri: photo.uri },
     });
-  };
+  }
 
-  const toggleCamera = () => {
+  function toggleCamera() {
     setFacing((prev) => (prev === "back" ? "front" : "back"));
-  };
+  }
 
   if (!hasPermission) return null;
 
@@ -70,9 +68,9 @@ export default function CameraScreen() {
           </Pressable>
           <Pressable
             onPress={takePhoto}
-            className="w-20 h-20 rounded-full border-4 border-white items-center justify-center"
+            className="size-20 rounded-full border-4 border-white items-center justify-center"
           >
-            <View className="w-14 h-14 bg-white rounded-full" />
+            <View className="size-14 bg-white rounded-full" />
           </Pressable>
           <View style={{ width: 28 }} />
         </View>

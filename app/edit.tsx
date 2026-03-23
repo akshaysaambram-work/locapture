@@ -78,16 +78,16 @@ export default function EditScreen() {
     })();
   }, []);
 
-  const captureImage = async () => {
+  async function captureImage() {
     if (!viewRef.current) return null;
 
     return await captureRef(viewRef, {
       format: "jpg",
       quality: 1,
     });
-  };
+  }
 
-  const handleSave = async () => {
+  async function handleSave() {
     try {
       setSaving(true);
       const capturedUri = await captureImage();
@@ -100,9 +100,9 @@ export default function EditScreen() {
     } finally {
       setSaving(false);
     }
-  };
+  }
 
-  const handleShare = async () => {
+  async function handleShare() {
     try {
       const capturedUri = await captureImage();
       if (!capturedUri) return;
@@ -111,7 +111,7 @@ export default function EditScreen() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }
 
   return (
     <View className="flex-1 bg-black">

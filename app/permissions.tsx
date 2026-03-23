@@ -1,6 +1,5 @@
 import * as Camera from "expo-camera";
 import * as Location from "expo-location";
-// import * as MediaLibrary from "expo-media-library";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,7 +12,7 @@ import {
 
 export default function PermissionsScreen() {
   const [loading, setLoading] = useState(false);
-  const [_camera, requestCameraPermission] = Camera.useCameraPermissions();
+  const [, requestCameraPermission] = Camera.useCameraPermissions();
 
   const requestPermissions = async () => {
     try {
@@ -25,13 +24,8 @@ export default function PermissionsScreen() {
       // Location
       const location = await Location.requestForegroundPermissionsAsync();
 
-      // Media / Storage
-      // const media = await MediaLibrary.requestPermissionsAsync();
-
       const allGranted =
-        camera.status === "granted" &&
-        location.status === "granted";
-        // media.status === "granted";
+        camera.status === "granted" && location.status === "granted";
 
       if (allGranted) {
         router.replace("/camera"); // navigate to camera screen
