@@ -79,7 +79,7 @@ export default function SettingsScreen() {
           <Text className="text-zinc-500 text-4xl uppercase tracking-widest">
             Capture moments with location 📍
           </Text>
-          <View className="h-px border my-4 border-gray-800" />
+          <View className="h-px my-4 bg-zinc-800" />
           <Text className="text-zinc-600 text-xl">Locapture</Text>
         </View>
       </ScrollView>
