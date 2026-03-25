@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView } from "expo-camera";
 import * as Location from "expo-location";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, StatusBar, Text, View } from "react-native";
 
@@ -15,65 +15,71 @@ export default function CameraScreen() {
 
   const timestamp = new Date().toLocaleString();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        // Get high accuracy location
-        const loc = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
+  async function fetchLocation() {
+    try {
+      // Get high accuracy location
+      const loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
 
-        const { latitude, longitude, altitude, accuracy, speed, heading } =
-          loc.coords;
+      const { latitude, longitude, altitude, accuracy, speed, heading } =
+        loc.coords;
 
-        // Format coords
-        setCoords(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+      // Format coords
+      setCoords(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
 
-        // Reverse geocode
-        const address = await Location.reverseGeocodeAsync({
-          latitude,
-          longitude,
-        });
+      // Reverse geocode
+      const address = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
 
-        if (address.length > 0) {
-          const a = address[0];
+      if (address.length > 0) {
+        const a = address[0];
 
-          // Build rich location string
-          const formatted = [
-            a.name, // place name
-            a.street, // street
-            a.district, // district (Android mostly)
-            a.subregion, // subregion
-            a.city, // city
-            a.region, // state
-            a.postalCode, // ZIP / PIN
-            a.country, // country
-          ]
-            .filter(Boolean)
-            .join(", ");
+        // Build rich location string
+        const formatted = [
+          a.name, // place name
+          a.street, // street
+          a.district, // district (Android mostly)
+          a.subregion, // subregion
+          a.city, // city
+          a.region, // state
+          a.postalCode, // ZIP / PIN
+          a.country, // country
+        ]
+          .filter(Boolean)
+          .join(", ");
 
-          setLocationText(formatted);
+        setLocationText(formatted);
 
-          // Extra metadata (optional display)
-          const extras = [
-            altitude ? `Alt: ${altitude.toFixed(1)}m` : null,
-            accuracy ? `±${accuracy.toFixed(1)}m` : null,
-            speed ? `Speed: ${(speed * 3.6).toFixed(1)} km/h` : null,
-            heading ? `Heading: ${heading.toFixed(0)}°` : null,
-          ]
-            .filter(Boolean)
-            .join(" • ");
+        // Extra metadata (optional display)
+        const extras = [
+          altitude ? `Alt: ${altitude.toFixed(1)}m` : null,
+          accuracy ? `±${accuracy.toFixed(1)}m` : null,
+          speed ? `Speed: ${(speed * 3.6).toFixed(1)} km/h` : null,
+          heading ? `Heading: ${heading.toFixed(0)}°` : null,
+        ]
+          .filter(Boolean)
+          .join(" • ");
 
-          setMetaInfo(extras); // <- create this state
-        } else {
-          setLocationText("Unknown location");
-        }
-      } catch (e) {
-        console.error(e);
-        setLocationText("Location unavailable");
+        setMetaInfo(extras);
+      } else {
+        setLocationText("Unknown location");
       }
-    })();
-  }, []);
+    } catch (e) {
+      console.error(e);
+      setLocationText("Location unavailable");
+    }
+  }
+
+  useEffect(() => {
+    fetchLocation();
+  }, [locationText]);
+
+  useFocusEffect(() => {
+    fetchLocation();
+  });
 
   async function takePhoto() {
     if (!cameraRef.current) return;
@@ -81,6 +87,7 @@ export default function CameraScreen() {
     const photo = await cameraRef.current.takePictureAsync({
       quality: 1,
     });
+    if (!photo?.uri) return;
 
     router.push({
       pathname: "/camera/edit",

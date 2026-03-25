@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   StatusBar,
   Text,
@@ -16,10 +17,9 @@ export default function PermissionsScreen() {
   const [, requestCameraPermission] = Camera.useCameraPermissions();
 
   useEffect(() => {
-    (async () => {
+    async function checkPermissions() {
       try {
         const camera = await requestCameraPermission();
-
         const location = await Location.getForegroundPermissionsAsync();
 
         const allGranted =
@@ -31,8 +31,10 @@ export default function PermissionsScreen() {
       } finally {
         setChecking(false);
       }
-    })();
-  }, []);
+    }
+
+    checkPermissions();
+  }, [requestCameraPermission]);
 
   async function requestPermissions() {
     try {
@@ -50,11 +52,11 @@ export default function PermissionsScreen() {
       if (allGranted) {
         router.replace("/camera"); // navigate to camera screen
       } else {
-        alert("Please grant all permissions to continue.");
+        Alert.alert("Please grant all permissions to continue.");
       }
     } catch (e) {
       console.error(e);
-      alert("Something went wrong while requesting permissions.");
+      Alert.alert("Something went wrong while requesting permissions.");
     } finally {
       setLoading(false);
     }

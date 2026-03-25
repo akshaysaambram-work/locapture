@@ -23,7 +23,7 @@ export default function Index() {
           Capture moments with location 📍
         </Text>
       </View>
-      <View className="absolute bottom-10">
+      <View className="absolute bottom-16">
         <Text className="text-zinc-600 text-xs">Powered by Arox Playworks</Text>
       </View>
     </View>
